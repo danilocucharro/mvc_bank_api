@@ -1,32 +1,32 @@
 from src.models.sqlite.entities.legal_entity import LegalEntityTable
-from src.models.sqlite.interfaces.legal_entity_repository_interface import LegalEntityRepositoryInterface
+from src.models.sqlite.interfaces.legal_entity_repository_i import LegalEntityRepositoryI
 from src.models.sqlite.settings.connection import DBConnectionHandler
+from typing import Dict
 
-
-class LegalEntityRepository(LegalEntityRepositoryInterface):
+class LegalEntityRepository(LegalEntityRepositoryI):
     def __init__(self, db_connection: DBConnectionHandler) -> None:
         self.__db_connection = db_connection
 
     def insert_legal_entity(
             self,
-            faturamento: int,
-            idade: int,
-            nome_fantasia: str,
-            celular: str,
-            email_corporativo: str,
-            categoria: str,
-            saldo: int
+            invoicing: int,
+            age: int,
+            trade_name: str,
+            telephone: str,
+            email: str,
+            category: str,
+            balance: int
     ) -> None:
         with self.__db_connection as database:
             try:
                 legal_entity_data = LegalEntityTable(
-                    faturamento=faturamento,
-                    idade=idade,
-                    nome_fantasia=nome_fantasia.lower(),
-                    celular=celular,
-                    email_corporativo=email_corporativo,
-                    categoria=categoria,
-                    saldo=saldo
+                    faturamento=invoicing,
+                    idade=age,
+                    nome_fantasia=trade_name.lower(),
+                    celular=telephone,
+                    email_corporativo=email,
+                    categoria=category,
+                    saldo=balance
                 )
                 database.session.add(legal_entity_data)
                 database.session.commit()
@@ -49,7 +49,7 @@ class LegalEntityRepository(LegalEntityRepositoryInterface):
                 raise exception
                 return []
 
-    def get_legal_entities(self) -> LegalEntityTable:
+    def get_legal_entities(self) -> Dict:
         with self.__db_connection as database:
             try:
                 legal_entities = database.session.query(LegalEntityTable).all()
@@ -58,18 +58,16 @@ class LegalEntityRepository(LegalEntityRepositoryInterface):
                 raise exception
                 return []
 
-    def update_legal_entity_balance(self, legal_entity_name: str, new_balance: int):
+    def update_legal_entity_balance(self, legal_entity_name: str, new_balance: float) -> None:
         with self.__db_connection as database:
             try:
                 legal_entity = (
-                    database.session
+                    database
+                    .session
                     .query(LegalEntityTable)
                     .filter(LegalEntityTable.nome_fantasia == legal_entity_name.lower())
-                    .first()
+                    .one()
                 )
-                if not legal_entity:
-                    print("Entidade nao encontrada")
-                    return
 
                 legal_entity.saldo = new_balance
                 database.session.commit()
