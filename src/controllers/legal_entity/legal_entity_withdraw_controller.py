@@ -25,6 +25,12 @@ class LegalEntityWithdrawController(CustomerInterface):
 
         return response
 
+    def account_statement(self, customer_name: str) -> Dict:
+        legal_entity = self.__get_legal_entity_in_db(customer_name)
+        response = self.__format_response_to_account_statement(legal_entity.saldo)
+
+        return response
+
     def __validate_withdraw(self, withdraw_amount: float, account_balance: float) -> None:
         if withdraw_amount > account_balance:
             raise Exception()
@@ -42,12 +48,6 @@ class LegalEntityWithdrawController(CustomerInterface):
             new_balance=new_balance,
             legal_entity_name=legal_entity_name
         )
-
-    def account_statement(self, customer_name: str) -> Dict:
-        legal_entity = self.__get_legal_entity_in_db(customer_name)
-        response = self.__format_response_to_account_statement(legal_entity.saldo)
-
-        return response
 
     def __format_response_to_withdraw(self) -> Dict:
         response =  {

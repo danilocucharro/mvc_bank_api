@@ -8,7 +8,7 @@ class MockLegalEntityRepository:
 
 def test_legal_entity_finder_controller():
     controller = LegalEntityFinderController(MockLegalEntityRepository())
-    response = controller.find("mario mercado")
+    response = controller.find("")
 
     expected_response = {
         "data": {

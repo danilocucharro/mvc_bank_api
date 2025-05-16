@@ -1,3 +1,5 @@
+from sqlalchemy.orm.exc import NoResultFound
+
 from src.models.sqlite.entities.legal_entity import LegalEntityTable
 from src.models.sqlite.interfaces.legal_entity_repository_i import LegalEntityRepositoryI
 from src.models.sqlite.settings.connection import DBConnectionHandler
@@ -45,18 +47,16 @@ class LegalEntityRepository(LegalEntityRepositoryI):
                     .one()
                 )
                 return legal_entity
-            except Exception as exception:
-                raise exception
-                return []
+            except NoResultFound:
+                return None
 
     def get_legal_entities(self) -> Dict:
         with self.__db_connection as database:
             try:
                 legal_entities = database.session.query(LegalEntityTable).all()
                 return legal_entities
-            except Exception as exception:
-                raise exception
-                return []
+            except NoResultFound:
+                return None
 
     def update_legal_entity_balance(self, legal_entity_name: str, new_balance: float) -> None:
         with self.__db_connection as database:

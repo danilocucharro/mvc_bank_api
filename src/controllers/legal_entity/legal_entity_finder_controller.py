@@ -1,4 +1,5 @@
 from src.controllers.interfaces.legal_entity_finder_controller_i import LegalEntityFinderInterface
+from src.errors.error_types.http_not_found import HttpNotFoundError
 from src.models.sqlite.entities.legal_entity import LegalEntityTable
 from src.models.sqlite.interfaces.legal_entity_repository_i import LegalEntityRepositoryI
 from typing import Dict
@@ -15,6 +16,8 @@ class LegalEntityFinderController(LegalEntityFinderInterface):
 
     def __get_legal_entity_in_db(self, legal_entity_name: str) -> LegalEntityTable:
         legal_entity = self.__legal_entity_repository.get_legal_entity(legal_entity_name)
+        if not legal_entity:
+            raise HttpNotFoundError("Empresa não foi encontrada")
 
         return legal_entity
 
